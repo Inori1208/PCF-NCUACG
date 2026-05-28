@@ -13,10 +13,10 @@ The project aimed to create a private cloud framework and remote data management
 
 ## TODOs
 
-- [] Successfully connect to the server and access the disk. 
-- [] Create a platform for people to upload files.
-- [] Setup authentication process and implement IAM policy.
-- [] Let Raspberry Pi become VPN tunnel for remote control.
+- [ ] Successfully connect to the server and access the disk. 
+- [ ] Create a platform for people to upload files.
+- [ ] Setup authentication process and implement IAM policy.
+- [ ] Let Raspberry Pi become VPN tunnel for remote control.
 
 ## Good luck
 
