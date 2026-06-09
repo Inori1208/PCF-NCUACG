@@ -9,7 +9,7 @@ The project aimed to create a private cloud framework and remote data management
 
 - Raspberry Pi
 - SD card
-- A Disk
+- A Disk or USB device
 
 ## Architecture
 
