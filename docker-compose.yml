@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mariadb:10.11
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${ROOT_PWD}
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  app:
+    image: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    volumes:
+      - nextcloud_main:/var/www/html
+      # 將外接硬碟綁定給 Nextcloud 的核心設定
+      - /mnt/nextcloud_data:/var/www/html/data
+    environment:
+      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+
+volumes:
+  db_data:
+  nextcloud_main:
