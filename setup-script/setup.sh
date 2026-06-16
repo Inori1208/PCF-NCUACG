@@ -4,14 +4,22 @@
 set -e
 
 # 1. 互動式安全輸入密碼（使用 -s 參數，輸入時螢幕不會顯示字元）
+read -p "請設定 Nextcloud 管理員 (Admin) 帳號名稱: " NC_ADMIN_USER
+if [ -z "$NC_ADMIN_USER" ]; then
+    echo "錯誤：管理員帳號不可為空白！"
+    exit 1
+fi
+
+read -s -p "請設定 Nextcloud 管理員密碼: " NC_ADMIN_PWD
+echo ""
 read -s -p "請設定 MariaDB Root 密碼: " ROOT_PWD
 echo ""
 read -s -p "請設定 Nextcloud 資料庫連線密碼: " DB_PWD
 echo ""
 
 # 檢查使用者是否有輸入內容，若留白則退出
-if [ -z "$ROOT_PWD" ] || [ -z "$DB_PWD" ]; then
-    echo "錯誤：密碼不可為空白，請重新執行腳本。"
+if [ -z "$NC_ADMIN_PWD" ] || [ -z "$ROOT_PWD" ] || [ -z "$DB_PWD" ]; then
+    echo "錯誤：所有密碼欄位皆不可為空白，請重新執行腳本。"
     exit 1
 fi
 
@@ -23,6 +31,13 @@ if [ ! -d "/mnt/nextcloud_data" ]; then
 fi
 # 將資料夾權限賦予 Docker 內部的 Nextcloud 使用者 (UID: 33)
 sudo chown -R 33:33 /mnt/nextcloud_data
+
+cat << EOF > .env
+ROOT_PWD=${ROOT_PWD}
+DB_PWD=${DB_PWD}
+NC_ADMIN_USER=${NC_ADMIN_USER}
+NC_ADMIN_PWD=${NC_ADMIN_PWD}
+EOF
 
 # 3. 利用 Here-Doc 動態產生寫入使用者密碼的 docker-compose.yml
 echo "正在產生 docker-compose.yml 檔案..."
@@ -56,11 +71,17 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+      - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PWD}
 
 volumes:
   db_data:
   nextcloud_main:
 EOF
+
+if [ ! -f ".gitignore" ]; then
+    echo ".env" > .gitignore
+fi
 
 echo "docker-compose.yml 產生成功！"
 

@@ -27,7 +27,23 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+      - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PWD}
 
+  collabora:
+    image: collabora/code:latest
+    container_name: collabora_server
+    restart: always
+    ports:
+      - "9980:9980"
+    environment:
+      # 告訴 Collabora 允許哪個網域/IP 的 Nextcloud 來連線 (使用你目前的區網 IP)
+      - aliasgroup1=http://172.20.10.3:8080
+      # 關鍵設定：因為是區網內 HTTP 直連，必須關閉 SSL
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=false
+    cap_add:
+      - MKNOD
+      
 volumes:
   db_data:
   nextcloud_main:
