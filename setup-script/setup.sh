@@ -46,7 +46,13 @@ services:
   db:
     image: mariadb:10.11
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    # 針對 2GB RAM 的資料庫記憶體優化限制
+    command:
+      - --transaction-isolation=READ-COMMITTED
+      - --log-bin=binlog
+      - --binlog-format=ROW
+      - --innodb_buffer_pool_size=64M
+      - --max_connections=50
     volumes:
       - db_data:/var/lib/mysql
     environment:
@@ -64,15 +70,16 @@ services:
       - db
     volumes:
       - nextcloud_main:/var/www/html
-      # 將外接硬碟綁定給 Nextcloud 的核心設定
+      # 您的外接硬碟掛載點，直接對應 Nextcloud 的資料夾
       - /mnt/nextcloud_data:/var/www/html/data
     environment:
-      - MYSQL_PASSWORD=${DB_PWD}
+      - MYSQL_PASSWORD=${DB_PWD} # 必須跟上面一樣
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
-      - NEXTCLOUD_ADMIN_USER=${NC_ADMIN_USER}
-      - NEXTCLOUD_ADMIN_PASSWORD=${NC_ADMIN_PWD}
+      # 限制 Nextcloud (PHP) 的最大記憶體使用量，防止系統崩潰
+      - PHP_MEMORY_LIMIT=512M
+
   collabora:
     image: collabora/code:latest
     container_name: collabora_server
@@ -80,7 +87,7 @@ services:
     ports:
       - "9980:9980"
     environment:
-      # 告訴 Collabora 允許哪個網域/IP 的 Nextcloud 來連線 (使用你目前的區網 IP)
+      # 告訴 Collabora 允許哪個網域/IP 的 Nextcloud 來連線
       - aliasgroup1=http://172.20.10.3:8080
       # 關鍵設定：因為是區網內 HTTP 直連，必須關閉 SSL
       - extra_params=--o:ssl.enable=false --o:ssl.termination=false
