@@ -108,3 +108,12 @@ echo "docker-compose.yml 產生成功！"
 # 4. 自動執行 Docker Compose
 echo "正在啟動 Docker 容器..."
 docker compose up -d
+
+until docker compose exec -T --user www-data app php occ status --json > /dev/null 2>&1; do
+    echo -n "."
+    sleep 3
+done
+
+docker compose exec -T --user www-data app php occ group:add "Manager"
+
+docker compose exec -T --user www-data app php occ group:add "Member"

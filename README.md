@@ -41,9 +41,9 @@ TBA
 
 ## TODOs
 
-- [ ] Successfully connect to the server and access the disk. 
-- [ ] Create a platform for people to upload files.
-- [ ] Setup authentication process and implement IAM policy.
+- [x] Successfully connect to the server and access the disk. 
+- [x] Create a platform for people to upload files.
+- [x] Setup authentication process and implement IAM policy.
 - [ ] Let Raspberry Pi become VPN tunnel for remote control.
 
 ## Good luck
