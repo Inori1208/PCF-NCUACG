@@ -46,6 +46,10 @@ TBA
 - [x] Setup authentication process and implement IAM policy.
 - [ ] Let Raspberry Pi become VPN tunnel for remote control.
 
+## Acknowledgements
+
+This project uses [Nextcloud](https://github.com/nextcloud) as the core file management platform. We would like to thank the Nextcloud open-source community for providing a reliable and extensible private cloud solution.
+
 ## Good luck
 
 This is good luck Hoshino.
